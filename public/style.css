@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #23cac2;
+}
+
+h1 {
+    color: #2E8B57;
+    font-size: 2em;
+}
+
+fieldset {
+    border: 2px solid #2E8B57;
+    padding: 15px;
+    width: 60%;
+    margin: auto;
+    background-color: white;
+    border-radius: 8px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #2E8B57;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+button:hover {
+    background-color: #1C6B46;
+}
+
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: white;
+    text-align: left;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #2E8B57;
+    color: white;
+}
+
+img {
+    max-width: 100px;
+    height: auto;
+}
+
+.btn-delete {
+    background-color: #DC3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-delete:hover {
+    background-color: #C82333;
+}
+
+.btn-update {
+    background-color: #FFC107;
+    color: black;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-update:hover {
+    background-color: #E0A800;
+}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Árboles</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <h1>🌳 Gestión de Árboles 🌳</h1>
+    <a href="/">menu</a>
+    <!-- Formulario para agregar un nuevo árbol -->
+    <fieldset>
+        <legend>🌱 Agregar Árbol</legend>
+        <form action="/agregar" method="POST" enctype="multipart/form-data">
+            <label for="especie">Especie:</label>
+            <select name="id_especie" id="especie" required>
+                <% especies.forEach(especie => { %>
+                    <option value="<%= especie.id_especie %>"><%= especie.nombre %></option>
+                <% }) %>
+            </select>
+
+            <label for="subespecie">Subespecie:</label>
+            <select name="id_subespecie" id="subespecie" required>
+                <% subespecies.forEach(subespecie => { %>
+                    <option value="<%= subespecie.id_subespecie %>"><%= subespecie.nombre %></option>
+                <% }) %>
+            </select>
+
+            <label for="zona">Proporcione su alcaldia:</label>
+            <select name="id_zona" id="zona" required>
+                <% zonas.forEach(zona => { %>
+                    <option value="<%= zona.id_zona %>"><%= zona.alcaldia %>, <%= zona.colonia %></option>
+                <% }) %>
+            </select>
+
+            <label for="grosor_tronco">Diametro del tronco (cm):</label>
+            <input type="number" name="grosor_tronco" min="0" step="0.01" required>
+
+            <label for="altura">Altura (m):</label>
+            <input type="number" name="altura" min="0" step="0.01" required>
+
+            <label for="angulo">Ángulo de Inclinación (°):</label>
+            <input type="number" name="angulo_inclinacion" min="0" step="0.01" required>
+
+            <label for="estado_raices">Estado de las Raíces:</label>
+            <select name="estado_raices" required>
+                <option value="Bueno">Bueno</option>
+                <option value="Regular">Regular</option>
+                <option value="Malo">Malo</option>
+            </select>
+
+            <label for="estado_follaje">Estado del Follaje:</label>
+            <select name="estado_follaje" required>
+                <option value="Bueno">Bueno</option>
+                <option value="Regular">Regular</option>
+                <option value="Malo">Malo</option>
+            </select>
+
+            <label for="ultima_inspeccion">Última Inspección:</label>
+            <input type="date" name="ultima_inspeccion" required>
+
+            <label for="fotografia">Fotografía:</label>
+            <input type="file" name="fotografia" id="fotografia" accept="image/*">
+
+            <label for="observaciones">Observaciones:</label>
+            <textarea name="observaciones" rows="3" placeholder="Detalles adicionales..."></textarea>
+
+            <label for="id_experto">Experto que Dictamina:</label>
+            <select name="id_experto" id="id_experto" required>
+                <option value="">Selecciona un experto</option>
+                <% expertos.forEach(experto => { %>
+                    <option value="<%= experto.id_experto %>"><%= experto.nombre_completo %></option>
+                <% }) %>
+            </select>
+
+            <button type="submit">Agregar Árbol</button>
+        </form>
+    </fieldset>
+
+    <!-- Lista de Árboles -->
+    <h2>🌲 Lista de Árboles 🌲</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Especie</th>
+            <th>Subespecie</th>
+            <th>Zona</th>
+            <th>Grosor (cm)</th>
+            <th>Altura (m)</th>
+            <th>Ángulo (°)</th>
+            <th>Raíces</th>
+            <th>Follaje</th>
+            <th>Últ. Inspección</th>
+            <th>Foto</th>
+            <th>Observaciones</th>
+            <th>Experto</th>
+            <th>Acciones</th>
+        </tr>
+        <% arboles.forEach(arbol => { %>
+        <tr>
+            <td><%= arbol.id_arbol %></td>
+            <td><%= arbol.nombre_especie %></td>
+            <td><%= arbol.nombre_subespecie %></td>
+            <td><%= arbol.nombre_zona %></td>
+            <td><%= arbol.grosor_tronco %> cm</td>
+            <td><%= arbol.altura %> m</td>
+            <td><%= arbol.angulo_inclinacion %>°</td>
+            <td><%= arbol.estado_raices %></td>
+            <td><%= arbol.estado_follaje %></td>
+            <td><%= arbol.ultima_inspeccion %></td>
+            <td>
+                <% if (arbol.fotografia) { %>
+                    <img src="<%= arbol.fotografia %>" alt="Foto Árbol" width="100">
+                <% } else { %>
+                    No disponible
+                <% } %>
+            </td>
+            <td><%= arbol.observaciones ? arbol.observaciones : "Sin observaciones" %></td>
+            <td><%= arbol.nombre_experto ? arbol.nombre_experto : "No asignado" %></td>
+            <td>
+                <!-- Eliminar -->
+                <form action="/eliminar" method="POST" style="display:inline;">
+                    <input type="hidden" name="id_arbol" value="<%= arbol.id_arbol %>">
+                    <button type="submit" class="btn-delete">❌ Eliminar</button>
+                </form>
+
+                <!-- Actualizar -->
+                <form action="/actualizar" method="POST" style="display:inline;">
+                    <input type="hidden" name="id_arbol" value="<%= arbol.id_arbol %>">
+                    <input type="number" name="grosor_tronco" placeholder="Nuevo Grosor" min="0" step="0.01" required>
+                    <input type="number" name="altura" placeholder="Nueva Altura" min="0" step="0.01" required>
+                    <input type="number" name="angulo_inclinacion" placeholder="Nuevo Ángulo" min="0" step="0.01" required>
+                    <button type="submit" class="btn-update">🔄 Actualizar</button>
+                </form>
+            </td>
+        </tr>
+        <% }) %>
+    </table>
+
+</body>
+</html>
