@@ -1,0 +1,84 @@
+const express = require('express');
+const router = express.Router();
+const { pool } = require('../db'); // Asume que tienes un módulo para la conexión a DB
+const multer = require('multer');
+const path = require('path');
+
+// Configuración de Multer para subir imágenes
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/plagas/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'plaga-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+router.post('/reportar-plaga', upload.single('evidencia_fotografica'), async (req, res) => {
+  const {
+    id_arbol,
+    id_plaga,
+    fecha_detectada,
+    gravedad,
+    sintomas,
+    id_ciudadano,
+    observaciones
+  } = req.body;
+
+  const evidencia_fotografica = req.file ? '/uploads/plagas/' + req.file.filename : null;
+
+  try {
+    // Iniciar transacción
+    await pool.query('BEGIN');
+
+    // 1. Insertar en ArbolesPlagas
+    const plagaQuery = `
+      INSERT INTO ArbolesPlagas (id_arbol, id_plaga, fecha_detectada)
+      VALUES ($1, $2, $3)
+      RETURNING id_registro`;
+    
+    const plagaValues = [id_arbol, id_plaga, fecha_detectada];
+    const plagaResult = await pool.query(plagaQuery, plagaValues);
+    const idRegistro = plagaResult.rows[0].id_registro;
+
+    // 2. Crear trámite asociado (opcional)
+    const tramiteQuery = `
+      INSERT INTO Tramites (
+        id_ciudadano, 
+        id_arbol, 
+        tipo, 
+        fecha_solicitud, 
+        estatus, 
+        evidencia
+      ) VALUES ($1, $2, $3, CURRENT_DATE, 'Pendiente', $4)`;
+    
+    const tramiteValues = [
+      id_ciudadano,
+      id_arbol,
+      'Reporte de plaga',
+      evidencia_fotografica
+    ];
+    await pool.query(tramiteQuery, tramiteValues);
+
+    // 3. Actualizar observaciones del árbol si es necesario
+    if (observaciones) {
+      const updateArbolQuery = `
+        UPDATE Arboles 
+        SET observaciones = COALESCE(observaciones, '') || '\n' || $1
+        WHERE id_arbol = $2`;
+      await pool.query(updateArbolQuery, [`[PLAGA] ${observaciones}`, id_arbol]);
+    }
+
+    // Commit de la transacción
+    await pool.query('COMMIT');
+
+    res.redirect('/reporte-plagas?success=1');
+  } catch (error) {
+    await pool.query('ROLLBACK');
+    console.error('Error al reportar plaga:', error);
+    res.status(500).send('Error al procesar el reporte de plaga');
+  }
+});
