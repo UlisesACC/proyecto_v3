@@ -1,0 +1,20 @@
+@startuml
+actor Ciudadano
+actor Brigada
+actor ExpertoArboles
+actor Direccion_Servicios_Urbanos
+
+package "Gestión de Árboles" as SistemaGestionArboles {
+    (Registrar árbol)
+    (Registrar poda)
+    (Registrar tala)
+    (Tratamiento de arboles)
+    (Reportar incidencias de arboles)
+    Ciudadano -->(Reporte de árbol)
+    (Reporte de árbol) --> (Registrar poda) <<include>>
+    (Reporte de árbol) --> (Registrar tala) <<include>>
+    (Reporte de árbol) --> (Reportar incidencias de arboles) <<include>>
+    ExpertoArboles --> (Registrar árbol)
+}
+
+@enduml
